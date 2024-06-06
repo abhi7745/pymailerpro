@@ -4,12 +4,18 @@ import os, sys
 EMAIL_PROVIDERS = ['@gmail.com', '@yahoo.com', '@outlook.com']  # Add other familiar email hosts here
 
 # For development purpose
-DEVELOPMENT = False
-if os.path.exists('dev_config.py'):
+DEVELOPMENT = False # means production
+config_file = 'config.py' # means production
+config_path = ''
+if os.path.exists('dev_config.py'): # development condition
     from dev_config import EMAIL, PASSWORD
     DEVELOPMENT = True
-else:
+    config_file = 'dev_config.py'
+    config_path = os.path.join(os.path.dirname(__file__), config_file)
+else: # production condition
     from config import EMAIL, PASSWORD
+    # config_file = 'config.py'
+    config_path = os.path.join(os.path.dirname(__file__), config_file)
 
 
 
@@ -20,8 +26,12 @@ def help():
 
 def config():
     while True:
-        print('Please configure your Email and password:-')
-        email = input("Enter you Email: ")
+        if EMAIL == '' or PASSWORD == '':
+            print('Please configure your Email and Password:-')
+        else:
+            print('Please reset your Email and Password:-')
+            
+        email = input("Enter you Email: ").replace(' ', '') # Remove all spaces from the input string.
         psd = input("Enter you Password: ")
 
         if email == '' or psd == '':
@@ -33,11 +43,20 @@ def config():
             continue
 
         else:
-            config_file = 'dev_config.py' if DEVELOPMENT else 'config.py'
+            # config_file = 'dev_config.py' if DEVELOPMENT else 'config.py'
             config_path = os.path.join(os.path.dirname(__file__), config_file)
             
             with open(config_path, 'w') as file:
                 file.write(f"EMAIL = '{email}'\nPASSWORD = '{psd}'")
+
+            if EMAIL == '' or PASSWORD == '':
+                print('Your Email and Password have been successfully added.')
+                exit(0)
+                # break
+            else:
+                print('You have successfully updated your Email and Password.')
+                exit(0)
+                # break
             break
 
 
